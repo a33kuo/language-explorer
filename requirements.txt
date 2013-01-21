@@ -1,0 +1,4 @@
+Flask
+Flask-SQLAlchemy
+passlib
+validate_email
