@@ -14,7 +14,7 @@ def connect_db(app):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String(120))
+    password = db.Column(db.String(512))
     role = db.Column(db.Integer)
     ROLE = enum('admin', 'teacher', 'student')
 
@@ -23,10 +23,10 @@ class User(db.Model):
             raise ValueError('Email format is not valid.')
         if len(email) > 120:
             raise ValueError('Email length exceeds 120 characters.')
-        if len(password) > 120:
-            raise ValueError('Password length exceeds 120 characters.')
-        self.email = email
         passwd_hash = pwd_context.encrypt(password, category='admin')
+        if len(passwd_hash) > 512:
+            raise ValueError('Password length exceeds limit.')
+        self.email = email
         self.password = passwd_hash
         self.role = role
 
@@ -54,3 +54,104 @@ class User(db.Model):
 
     def check_password(self, password):
         return pwd_context.verify(password, self.password)
+
+
+class Language(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), unique=True)
+    description = db.Column(db.String(512))
+    contexts = db.relationship('Context', backref='language', lazy='dynamic')
+    concepts = db.relationship('Context', backref='language', lazy='dynamic')
+
+    def __init__(self, code, description):
+        self.code = code
+        self.description = description
+
+    def __repr__(self):
+        return '<Language:%r>' % (self.code)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, code=None, description=None):
+        if code != None:
+            self.code = code
+        elif description != None:
+            self.description = description
+        if code != None or description != None:
+            db.session.commit()
+
+
+concept_context = db.Table('concept_context',
+    db.Column('concept_id', db.Integer, db.ForeignKey('context.id')),
+    db.Column('context_id', db.Integer, db.ForeignKey('concept.id'))
+)
+
+class Context(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(256), unique=True)
+    ctype = db.Column(db.Integer)
+    CONTEXT_TYPE = enum('location', 'event')
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+
+    def __init__(self, text, lang_id, ctype=CONTEXT_TYPE.location):
+        self.text = text
+        self.ctype = ctype
+        self.language_id = lang_id
+
+    def __repr__(self):
+        return '<Context:%r %r>' % (self.ctype, self.text)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, text=None, ctype=None, lang=None):
+        if text != None:
+            self.text = text
+        elif ctype != None:
+            self.ctype = ctype
+        elif lang != None:
+            self.language_id = lang
+        if text != None or ctype != None or lang != None:
+            db.session.commit()
+
+    @staticmethod
+    def get_context(text, lang):
+        return db.session.query(Context).filter_by(text=text)\
+                                        .filter_by(language_id=lang).one()
+
+
+class Concept(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(256), unique=True)
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    concept_context = db.relationship('Context', secondary=concept_context, \
+                                      backref=db.backref('concepts', \
+                                                         lazy='dynamic'))
+
+    def __init__(self, text, lang):
+        self.text = text
+        self.language_id = lang
+
+    def __repr__(self):
+        lang = Language.query.get(language_id)
+        return '<Concept:%r/%r>' % (self.text, lang.code)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, text=None, lang=None):
+        if text != None:
+            self.text = text
+        elif lang != None:
+            self.language_id = lang
+        if text != None or lang != None:
+            db.session.commit()
+
+    @staticmethod
+    def get_context(text, lang):
+        return db.session.query(Concept).filter_by(text=text)\
+                                        .filter_by(language_id=lang).one()
