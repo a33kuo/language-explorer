@@ -61,7 +61,10 @@ class Language(db.Model):
     code = db.Column(db.String(10), unique=True)
     description = db.Column(db.String(512))
     contexts = db.relationship('Context', backref='language', lazy='dynamic')
-    concepts = db.relationship('Context', backref='language', lazy='dynamic')
+    concepts = db.relationship('Concept', backref='language', lazy='dynamic')
+    assertions = db.relationship('Assertion', backref='language', lazy='dynamic')
+    dialogues = db.relationship('Dialogue', backref='language', lazy='dynamic')
+    materials = db.relationship('Material', backref='language', lazy='dynamic')
 
     def __init__(self, code, description):
         self.code = code
@@ -84,8 +87,23 @@ class Language(db.Model):
 
 
 concept_context = db.Table('concept_context',
-    db.Column('concept_id', db.Integer, db.ForeignKey('context.id')),
-    db.Column('context_id', db.Integer, db.ForeignKey('concept.id'))
+    db.Column('concept_id', db.Integer, db.ForeignKey('concept.id')),
+    db.Column('context_id', db.Integer, db.ForeignKey('context.id'))
+)
+
+assertion_context = db.Table('assertion_context',
+    db.Column('assertion_id', db.Integer, db.ForeignKey('assertion.id')),
+    db.Column('context_id', db.Integer, db.ForeignKey('context.id'))
+)
+
+dialogue_context = db.Table('dialogue_context',
+    db.Column('dialogue_id', db.Integer, db.ForeignKey('dialogue.id')),
+    db.Column('context_id', db.Integer, db.ForeignKey('context.id'))
+)
+
+material_context = db.Table('material_context',
+    db.Column('material_id', db.Integer, db.ForeignKey('supp_material.id')),
+    db.Column('context_id', db.Integer, db.ForeignKey('context.id'))
 )
 
 class Context(db.Model):
@@ -123,6 +141,7 @@ class Context(db.Model):
                                         .filter_by(language_id=lang).one()
 
 
+# TODO(a33kuo): Add age group to specify content level.
 class Concept(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256), unique=True)
@@ -130,17 +149,23 @@ class Concept(db.Model):
     concept_context = db.relationship('Context', secondary=concept_context, \
                                       backref=db.backref('concepts', \
                                                          lazy='dynamic'))
+    right_feature = db.relationship('Assertion', backref='concept1', lazy='dynamic')
+    left_feature = db.relationship('Assertion', backref='concept2', lazy='dynamic')
 
     def __init__(self, text, lang):
         self.text = text
         self.language_id = lang
 
     def __repr__(self):
-        lang = Language.query.get(language_id)
+        lang = Language.query.get(self.language_id)
         return '<Concept:%r/%r>' % (self.text, lang.code)
 
     def add(self):
         db.session.add(self)
+        db.session.commit()
+
+    def add_context(self, context):
+        self.concept_context.append(context)
         db.session.commit()
 
     def update(self, text=None, lang=None):
@@ -152,6 +177,131 @@ class Concept(db.Model):
             db.session.commit()
 
     @staticmethod
-    def get_context(text, lang):
+    def get_concept(text, lang):
         return db.session.query(Concept).filter_by(text=text)\
                                         .filter_by(language_id=lang).one()
+
+
+class Relation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(256), unique=True)
+    assertion = db.relationship('Assertion', backref='relation', lazy='dynamic')
+
+    def __init__(self, text):
+        self.text = text
+
+    def __repr__(self):
+        return '<Relation:%r>' % (self.text)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, text=None):
+        if text != None:
+            self.text = text
+            db.session.commit()
+
+    @staticmethod
+    def get_relation(text):
+        return db.session.query(Relation).filter_by(text=text).one()
+
+
+# TODO(a33kuo): Add @property for concepts and relation
+class Assertion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    concept1_id = db.Column(db.Integer, db.ForeignKey('concept.id'))
+    concept2_id = db.Column(db.Integer, db.ForeignKey('concept.id'))
+    relation_id = db.Column(db.Integer, db.ForeignKey('relation.id'))
+    assesrtion_context = db.relationship('Context', secondary=assertion_context, \
+                                         backref=db.backref('assertions', \
+                                                            lazy='dynamic'))
+
+    def __init__(self, language_id, concept1_id, concept2_id, relation_id):
+        self.language_id
+        self.concept1_id = concept1_id
+        self.concept2_id = concept2_id
+        self.relation_id = relation_id
+
+    def __repr__(self):
+        c1 = Concept.query.get(self.concept1_id)
+        c2 = Concept.query.get(self.concept2_id)
+        r = Relation.query.get(self.relation_id)
+        lang = Language.query.get(self.language_id)
+        return '<Assertion:%r %r(%r,%r)>' % (lang.code, r.text, c1.text, c2.text)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def add_context(self, context):
+        self.assertion_context.append(context)
+        db.session.commit()
+
+
+# TODO(a33kuo): Add age group to specify content level.
+class Dialogue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text())
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    dialogue_context = db.relationship('Context', secondary=dialogue_context, \
+                                       backref=db.backref('dialogues', \
+                                                          lazy='dynamic'))
+
+    def __init__(self, text, lang):
+        self.text = text
+        self.language_id = lang
+
+    def __repr__(self):
+        lang = Language.query.get(self.language_id)
+        return '<Dialogue:%r/%r>' % (lang.code, self.text)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def add_context(self, context):
+        self.dialogue_context.append(context)
+        db.session.commit()
+
+    def update(self, text=None, lang=None):
+        if text != None:
+            self.text = text
+        elif lang != None:
+            self.language_id = lang
+        if text != None or lang != None:
+            db.session.commit()
+
+# TODO(a33kuo): Add age group to specify content level.
+class SuppMaterial(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text())
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    material_context = db.relationship('Context', secondary=material_context, \
+                                       backref=db.backref('materials', \
+                                                          lazy='dynamic'))
+
+    def __init__(self, text, lang):
+        self.text = text
+        self.language_id = lang
+
+    def __repr__(self):
+        lang = Language.query.get(self.language_id)
+        return '<SuppMaterial:%r>\n%r' % (lang.code, self.text)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def add_context(self, context):
+        self.material_context.append(context)
+        db.session.commit()
+
+    def update(self, text=None, lang=None):
+        if text != None:
+            self.text = text
+        elif lang != None:
+            self.language_id = lang
+        if text != None or lang != None:
+            db.session.commit()
