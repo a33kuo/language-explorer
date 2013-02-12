@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Language Explorer | The Commonsense Assisted Language Learning Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Language Explorer is a commonsense assisted language learning tool.">
+  <meta name="author" content="Yen-Ling Kuo | NTU iAgents Lab | MIT Media Lab">
+
+  <!-- TODO: Add favorite icons.
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/img/customize/apple/touch-icon-iphone4.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/img/customize/apple/touch-icon-ipad.png">
+  <link rel="apple-touch-icon-precomposed" href="/static/img/customize/apple/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/static/img/customize/favicon.png">
+  -->
+
+  <!-- CSS -->
+  {% block css %}
+  {% endblock %}
+
+  <!--[if IE 7]>
+    <link href="/static/css/font-awesome/font-awesome-ie7.css" rel="stylesheet">
+  <![endif]-->
+  <!-- Google Font Directory -->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header id="header">
+  {% block header %}
+  {% endblock %}
+  </header>
+
+  <!-- Navigation -->
+{% set navigation_bar = [
+    ('/about/', 'about', 'About'),
+    ('/faq/', 'faq', 'FAQ'),
+    ('/contact/', 'contact', 'Contact')
+] -%}
+{% set active_page = active_page|default('index') -%}
+      <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">
+            <b>Language</b> Explorer
+          </a>
+          <div class="nav-collapse fr">
+            <ul class="nav">
+            {% for href, id, caption in navigation_bar %}
+              <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+            {% endfor %}
+
+            {% if userObj and userObj.email %}
+              <li{% if 'mystudies' == active_page %} class="active"{% endif %}><a href="/admin/">My Studies</a></li>
+              <li><a href="/logout">Sign out</a></li>
+            {% else %}
+              <li{% if 'signin' == active_page %} class="active"{% endif %}><a href="/login">Sign In</a></li>
+            {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!-- end .container -->
+      </div><!-- end .navbar-inner -->
+    </div><!-- end .navbar -->
+
+  <!-- Content -->
+  <div id="content" class="container">
+  {% block body %}
+  {% endblock %}
+  </div>
+
+  <!-- Footer -->
+  {% block footer %}
+  {% include 'footer.html' %}
+  {% endblock %}
+
+  <!-- Javascript -->
+  {% block js %}
+  {% endblock %}
+
+</body>
+</html>
