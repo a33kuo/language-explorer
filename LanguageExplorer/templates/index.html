@@ -9,9 +9,9 @@
 
 {% block header %}
 {{ super() }}
-<a href="https://github.com/a33kuo/language-explorer">
+<!--<a href="https://github.com/a33kuo/language-explorer">
     <img style="position: absolute; top: 0; left: 0; border: 0; z-index: 99;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub">
-</a>
+</a>-->
 {% endblock %}
 
 {% block nav %}
@@ -24,11 +24,14 @@
     <div class="row">
       <div class="span8">
         <h1 class="lead">
-          <b>Language Explorer</b>.
+          <b>Language Explorer</b> helps you learn a new language!<br />
         </h1>
+        <p class="ac">
+          <img src="/static/img/concept/{{index_image}}.jpg" class="img-rounded" / >
+        </p>
       </div>
       <div class="span4">
-        <h3 class="ac"># Materials Collected</h3>
+        <h3># Materials Collected</h3>
         <p class="ac">
           <span class="btn btn-large btn-primary" style="cursor:default;"><b>999</b></span>
         </p>
@@ -39,17 +42,17 @@
 
     <div class="row">
       <div class="span4">
-        <h2><span class="grey">About </span> us</h2>
+        <h3><span class="grey">About </span> us</h3>
          <p>Developed by the <a href="http://www.agent.csie.ntu.edu.tw/">NTU iAgents Lab</a> and <a href="http://agents.media.mit.edu/">MIT Media Lab Software Agent Group</a>, Language Explorer is a platform to collect language learning content and apply commonsense knowledge to assist language learners to learn a new language.</p>
         <p><a class="" href="/about">Learn More &raquo;</a></p>
       </div>
       <div class="span4">
-        <h2><span class="grey">Learn</span> as a student</h2>
-          <p>The Language Explorer applies commonsense knowledge to organize collaboratively contributed language learning materials for students to learn and explore a new language. You can <a href="/login">join us</a> now to learn any language in any time and any context!</p>
+        <h3><span class="grey">Learn</span> as a student</h3>
+          <p>The Language Explorer applies commonsense knowledge to organize collaboratively contributed materials for students to learn and explore a new language. You can <a href="/login">join us</a> now to learn any language in any time and any context!</p>
         <p><a class="" href="/browse">Start Learning &raquo;</a></p>
       </div>
       <div class="span4">
-        <h2><span class="grey">Join</span> as a teacher</h2>
+        <h3><span class="grey">Join</span> as a teacher</h3>
         <p>Consider using or contributing to our language learning materials. We are recruiting teachers to add language learning materials to Language Explorer. You can <a href="/login">sign in</a> now to help organize materials for more students!</p>
         <p><a class="" href="/contribute">Add Materials &raquo;</a></p>
       </div>

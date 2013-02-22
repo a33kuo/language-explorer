@@ -64,7 +64,7 @@ class Language(db.Model):
     concepts = db.relationship('Concept', backref='language', lazy='dynamic')
     assertions = db.relationship('Assertion', backref='language', lazy='dynamic')
     dialogues = db.relationship('Dialogue', backref='language', lazy='dynamic')
-    materials = db.relationship('Material', backref='language', lazy='dynamic')
+    materials = db.relationship('SuppMaterial', backref='language', lazy='dynamic')
 
     def __init__(self, code, description):
         self.code = code
@@ -149,8 +149,8 @@ class Concept(db.Model):
     concept_context = db.relationship('Context', secondary=concept_context, \
                                       backref=db.backref('concepts', \
                                                          lazy='dynamic'))
-    right_feature = db.relationship('Assertion', backref='concept1', lazy='dynamic')
-    left_feature = db.relationship('Assertion', backref='concept2', lazy='dynamic')
+    #right_feature = db.relationship('Assertion', backref='concept1', lazy='dynamic')
+    #left_feature = db.relationship('Assertion', backref='concept2', lazy='dynamic')
 
     def __init__(self, text, lang):
         self.text = text
