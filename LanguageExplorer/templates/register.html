@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% set active_page = "signin" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css"/>
+<link rel="stylesheet" href="/static/css/font-awesome/font-awesome.css"/>
+<link rel="stylesheet" href="/static/css/style.css"/>
+{% endblock %}
+
+{% block body %}
+<div class="hero-unit">
+    <div class="ac">
+    </div>
+</div>
+<div class="row pricing">
+    <div class="span6 offset3">
+      <div class="well">
+        <h2>Create Account</h2>
+        {% if error %}
+          <p class="text-error">{{ error }}</p>
+        {% endif %}
+        <form class="form-horizontal" method=post action="/register" onsubmit="return validateForm()">
+          <div class="control-group">
+            <label class="control-label" for="email">Email</label>
+            <div class="controls">
+              <input type="email" id="email" name="email" placeholder="Email" required>
+            </div>
+          </div>
+          <div class="control-group" id="password_group">
+            <label class="control-label" for="password">Password</label>
+            <div class="controls">
+              <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <label class="control-label" for="confirm_password">Confirm Password</label>
+            <div class="controls">
+              <input type="password" id="confirm_password" name="confirm_password" placeholder="Password" oninput="confirmPassword()" required>
+              <span class="help-inline" id="confirm_msg"> </span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="role">Register as </label>
+            <div class="controls">
+              <select class="span2" id="role" name="role" required>
+                <option value=1 selected>Teacher</option>
+                <option value=2>Student</option>
+              </select>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Register</button>
+            </div>
+          </div>
+        </form>
+        <br />
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/lib/jquery-1.9.1.min.js"></script>
+<script src="/static/js/lib/bootstrap.js"></script>
+<script src="/static/js/lib/jquery.touchSwipe.js"></script>
+<script type="text/javascript">
+function confirmPassword() {
+    var password = document.getElementById('password').value;
+    var confirm_password = document.getElementById('confirm_password').value;
+    if (password != confirm_password) {
+        document.getElementById('password_group').setAttribute("class", "control-group error");
+        document.getElementById('confirm_msg').innerHTML = "The confirmed password does not match the password above.";
+    } else {
+        document.getElementById('password_group').setAttribute("class", "control-group success");
+        document.getElementById('confirm_msg').innerHTML = "The confirmed password is correct.";
+    }
+}
+
+function validateForm() {
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    var confirm_password = document.getElementById('confirm_password').value;
+    if (email == null || email == "" ||
+        password == null || password == "" ||
+        confirm_password == null || confirm_password == "") {
+        alert("Please fill in all the fields.");
+        return false;
+    }
+    if (password != confirm_password) {
+        alert("Please verify your password.");
+        return false;
+    }
+}
+</script>
+{% endblock %}
