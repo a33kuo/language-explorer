@@ -26,6 +26,9 @@
         <h1 class="lead">
           <b>Language Explorer</b> helps you learn a new language!<br />
         </h1>
+        {% if session.user_name %}
+        <p>Hi {{user_name}}, welcome!</p>
+        {% endif %}
         <p class="ac">
           <img src="/static/img/concept/{{index_image}}.jpg" class="img-rounded" / >
         </p>

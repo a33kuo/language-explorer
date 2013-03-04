@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import session
 from flask import render_template
 
 from LanguageExplorer.model import User
@@ -14,4 +15,8 @@ app.register_module(login)
 def main():
     # TODO: Add new concepts and assertions.
     img_id = random.randint(1, 7)
-    return render_template('index.html', index_image=img_id)
+    if session.get('user_name'):
+        user = session['user_name']
+    else:
+        user = None
+    return render_template('index.html', index_image=img_id, user_name=user)

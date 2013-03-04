@@ -5,6 +5,7 @@ import logging
 import os
 
 import config
+import password
 
 from LanguageExplorer import app
 from LanguageExplorer.model import connect_db, db
@@ -22,4 +23,5 @@ if __name__ == '__main__':
       db.create_all(app=app)
     # Run server until it is killed or interrupted by ^C.
     app.logger.setLevel(logging.DEBUG)
+    app.secret_key = password.SESSION_SECRET
     app.run(debug=config.DEBUG, host='0.0.0.0', port=config.PORT)
