@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page = "material" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css"/>
+<link rel="stylesheet" href="/static/css/font-awesome/font-awesome.css"/>
+<link rel="stylesheet" href="/static/css/style.css"/>
+{% endblock %}
+
+{% block body %}
+<div class="hero-unit">
+    <div class="ac">
+    </div>
+</div>
+<div class="row pricing">
+    <div class="span6 offset3">
+      <div class="well">
+        <h2>Add Dialogue</h2>
+        {% if error %}
+          <p class="text-error">{{ error }}</p>
+        {% endif %}
+        <form class="form-horizontal" method=post action="/add_dialogue/{{ context_id }}">
+          <div class="control-group" id="dialogue_group">
+            <label class="control-label" for="dialogue_text">Dialgoue Text</label>
+            <div class="controls">
+              <textarea rows="5" id="dialogue_text" name="dialogue_text" required></textarea>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Add</button>
+            </div>
+          </div>
+        </form>
+        <br />
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/lib/jquery-1.9.1.min.js"></script>
+<script src="/static/js/lib/bootstrap.js"></script>
+<script src="/static/js/lib/jquery.touchSwipe.js"></script>
+{% endblock %}

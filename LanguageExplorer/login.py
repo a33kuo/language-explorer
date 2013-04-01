@@ -6,6 +6,7 @@ from LanguageExplorer.model import User
 
 login = Module(__name__)
 
+# TODO(a33kuo): Ask user to set default material language.
 @login.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -21,6 +22,8 @@ def register():
             user.add()
             session['user_name'] = request.form['email'].split('@')[0]
             session['user_id'] = user.id
+            session['user_language'] = request.form['lang']
+            session['user_role'] = user.role
             return redirect('/')
     else:
         return render_template('register.html')
@@ -40,6 +43,8 @@ def signin():
         else:
             session['user_name'] = request.form['email'].split('@')[0]
             session['user_id'] = user.id
+            session['user_language'] = request.form['lang']
+            session['user_role'] = user.role
             return redirect('/')
     else:
         return render_template('login.html')
@@ -50,5 +55,9 @@ def logout():
         del session['user_name']
     if session.get('user_id'):
         del session['user_id']
+    if session.get('user_language'):
+        del session['user_language']
+    if session.get('user_role'):
+        del session['user_role']
     session.modified = True
     return redirect('/')

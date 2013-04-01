@@ -7,6 +7,7 @@ from LanguageExplorer.util import enum
 
 db = SQLAlchemy()
 AGE_GROUP = enum('kid', 'adult')
+CONTEXT_TYPE = enum('location', 'event')
 
 def connect_db(app):
     db.init_app(app)
@@ -108,9 +109,8 @@ material_context = db.Table('material_context',
 
 class Context(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(256), unique=True)
+    text = db.Column(db.String(256))
     ctype = db.Column(db.Integer)
-    CONTEXT_TYPE = enum('location', 'event')
     language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
 
     def __init__(self, text, lang_id, ctype=CONTEXT_TYPE.location):
@@ -136,15 +136,22 @@ class Context(db.Model):
             db.session.commit()
 
     @staticmethod
-    def get_context(text, lang):
-        return db.session.query(Context).filter_by(text=text)\
-                                        .filter_by(language_id=lang).one()
+    def get_context(context_id):
+        return db.session.query(Context).filter_by(id=context_id).first()
+
+    @staticmethod
+    def get_context_list(lang, ctype=None):
+        if ctype is None:
+            return db.session.query(Context).filter_by(language_id=lang).first()
+        else:
+            return db.session.query(Context).filter_by(language_id=lang)\
+                                            .filter_by(ctype=ctype).all()
 
 
 # TODO(a33kuo): Add age group to specify content level.
 class Concept(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(256), unique=True)
+    text = db.Column(db.String(256))
     language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
     concept_context = db.relationship('Context', secondary=concept_context, \
                                       backref=db.backref('concepts', \
@@ -176,10 +183,24 @@ class Concept(db.Model):
         if text != None or lang != None:
             db.session.commit()
 
+    def get_assertions(self):
+        right_features = db.session.query(Assertion).filter_by(concept1=self.id).all()
+        left_features = db.session.query(Assertion).filter_by(concept2=self.id).all()
+        assertion = []
+        if right_features is not None:
+            assertion = assertion + right_features
+        if left_features is not None:
+            assertion = assertion + left_features
+        return assertion
+
     @staticmethod
     def get_concept(text, lang):
         return db.session.query(Concept).filter_by(text=text)\
-                                        .filter_by(language_id=lang).one()
+                                        .filter_by(language_id=lang).first()
+
+    @staticmethod
+    def get_concept_by_id(concept_id):
+        return db.session.query(Concept).filter_by(id=concept_id).first()
 
 
 class Relation(db.Model):
@@ -204,7 +225,7 @@ class Relation(db.Model):
 
     @staticmethod
     def get_relation(text):
-        return db.session.query(Relation).filter_by(text=text).one()
+        return db.session.query(Relation).filter_by(text=text).first()
 
 
 # TODO(a33kuo): Add @property for concepts and relation

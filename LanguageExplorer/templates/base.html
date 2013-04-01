@@ -62,6 +62,7 @@
             {% endfor %}
 
             {% if session.user_name and session.user_id %}
+              <li{% if 'material' == active_page %} class="active"{% endif %}><a href="/context">Add Materials</a></li>
               <li><a href="/logout">Sign out</a></li>
             {% else %}
               <li{% if 'signin' == active_page %} class="active"{% endif %}><a href="/login">Sign In</a></li>

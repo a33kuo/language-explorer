@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page = "material" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css"/>
+<link rel="stylesheet" href="/static/css/font-awesome/font-awesome.css"/>
+<link rel="stylesheet" href="/static/css/style.css"/>
+{% endblock %}
+
+{% block body %}
+<div class="hero-unit">
+    <div class="ac">
+    </div>
+</div>
+<div class="row pricing">
+    <div class="span6 offset3">
+      <div class="well">
+        <h2>Add Concept</h2>
+        {% if error %}
+          <p class="text-error">{{ error }}</p>
+        {% endif %}
+        <form class="form-horizontal" method=post action="/add_concept/{{ context_id }}">
+          <div class="control-group" id="concept_group">
+            <label class="control-label" for="concept_name">Concept Name</label>
+            <div class="controls">
+              <input type="text" id="concept_name" name="concept_name" placeholder="Concept Name" required>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Add</button>
+            </div>
+          </div>
+        </form>
+        <br />
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/lib/jquery-1.9.1.min.js"></script>
+<script src="/static/js/lib/bootstrap.js"></script>
+<script src="/static/js/lib/jquery.touchSwipe.js"></script>
+{% endblock %}

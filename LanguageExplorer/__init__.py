@@ -9,7 +9,9 @@ import random
 app = Flask(__name__)
 
 from login import login
+from material import material
 app.register_module(login)
+app.register_module(material)
 
 @app.route("/")
 def main():

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% set active_page = "material" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css"/>
+<link rel="stylesheet" href="/static/css/font-awesome/font-awesome.css"/>
+<link rel="stylesheet" href="/static/css/style.css"/>
+{% endblock %}
+
+{% block nav %}
+    {% set active_page = 'material' %}
+    {{ super() }}
+{% endblock %}
+
+{% block body %}
+{% if list_mode %}
+    <h4>Available Learning Contexts</h4>
+    {% if session.user_role == 1 %}
+    <p><a href="/add_context/">[Add new context]</a></p>
+    {% endif %}
+    {% if locations|length > 0 %}
+    <p><i class="icon-map-marker"></i> <b>Location</b></p>
+    <ul>
+    {% for location in locations %}
+        <li><a href="/context/{{location.id}}">{{location.text}}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% if events|length > 0 %}
+    <h5><i class="icon-flag"></i> Event</h5>
+    <ul>
+    {% for event in events %}
+        <li><a href="/context/{{event.id}}">{{event.text}}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% else %}
+    <h4>Learning Materials for {{context.text}}</h4>
+    <p><i class="icon-question-sign"></i> <b>Concept</b> <small><a href="/add_concept/{{context.id}}">[Add]</a></small></p>
+    {% if concepts|length > 0 %}
+    <ul>
+    {% for concept in concepts %}
+        <li>{{concept.text}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    <p><i class="icon-comment"></i> <b>Dialogue</b> <small><a href="/add_dialogue/{{context.id}}">[Add]</a></small></p>
+    {% if dialogues|length > 0 %}
+    <ul>
+    {% for dialogue in dialogues %}
+        <li>{{dialogue.text.replace('\n', '<br />\n').replace('[', ' <b>[').replace(']', ']</b> ')|safe}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    <p><i class="icon-film"></i> <b>Supplementary Material</b> <small><a href="/add_supp_material/{{context.id}}">[Add]</a></small></p>
+    {% if supp_materials|length > 0 %}
+    <ul>
+    {% for supp in supp_materials %}
+        <li>{{supp.text.replace('\n', '<br />\n')|safe|urlize(40, true)}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% endif %}
+{% endblock %}

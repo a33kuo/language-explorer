@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% set active_page = "signin" %}
+{% set active_page = "material" %}
 
 {% block css %}
 <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css"/>
@@ -15,41 +15,34 @@
 <div class="row pricing">
     <div class="span6 offset3">
       <div class="well">
-        <h2>Sign In</h2>
+        <h2>Add Context</h2>
         {% if error %}
           <p class="text-error">{{ error }}</p>
         {% endif %}
-        <form class="form-horizontal" method=post action="/login">
-          <div class="control-group">
-            <label class="control-label" for="email">Email</label>
+        <form class="form-horizontal" method=post action="/add_context/">
+          <div class="control-group" id="password_group">
+            <label class="control-label" for="context_name">Context Name</label>
             <div class="controls">
-              <input type="email" id="email" name="email" placeholder="Email" required>
+              <input type="text" id="context_name" name="context_name" placeholder="Context Name" required>
             </div>
           </div>
           <div class="control-group">
-            <label class="control-label" for="password">Password</label>
+            <label class="control-label" for="context_type">Context Type</label>
             <div class="controls">
-              <input type="password" id="password" name="password" placeholder="Password">
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="lang">Preferred Material Language </label>
-            <div class="controls">
-              <select class="span2" id="lang" name="lang" required>
-                <option value=1 selected>Traditional Chinese</option>
-                <option value=2>Simplified Chinese</option>
+              <select class="span2" id="context_type" name="context_type" required>
+                <option value=0 selected>Location</option>
+                <option value=1>Event</option>
               </select>
             </div>
           </div>
           <div class="control-group">
             <div class="controls">
-              <button type="submit" class="btn">Sign in</button>
+              <button type="submit" class="btn">Add</button>
             </div>
           </div>
         </form>
         <br />
       </div>
-      <p class="ac">Don't have an account? <a href="/register">Create one now!</a><br /></p>
     </div>
 </div>
 {% endblock %}
@@ -62,5 +55,4 @@
 <script src="/static/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/static/js/lib/bootstrap.js"></script>
 <script src="/static/js/lib/jquery.touchSwipe.js"></script>
-
 {% endblock %}
